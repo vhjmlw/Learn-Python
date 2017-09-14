@@ -23,20 +23,21 @@ def fn(client, addr):
             print(new_list)
         response = r"""
             HTTP/1.1 200 OK
-            Date: Fri, 01 Sep 2017 13:19:38 GMT
             Content-Type: application/html
-            Transfer-Encoding: chunked
             Connection: keep-alive
             
             hello world
         """
-        client.send(response.encode('gb2312'))
+        response = 'HTTP/1.1 200 OK\r\nServer:my server\r\n\r\nhelloworld'
+        client.send(bytes(response, 'utf-8'))
+        client.close()
 
 def main():
     while True:
         client_socket,socket_addr = server_socket.accept()
         proc = Process(target=fn, args=(client_socket, socket_addr))
         proc.start()
+        client_socket.close()#记得要将client_socket关闭，新创建的进程中已经拷贝了一份
 
 if __name__ == '__main__':
     main()
